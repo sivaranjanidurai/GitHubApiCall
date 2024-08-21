@@ -17,6 +17,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.NoSuchElementException;
 
 
 @Service
@@ -54,10 +55,15 @@ public class GitHubRepoService implements  GitHubRepoUseCase
             }
             return gitHubRepoInfoDto;
         }
-        catch(Exception e)
+        catch(NoSuchElementException e)
         {
             throw new GitRepoNotFoundException("Git Repo not found with: " + owner+"/"+repositoryName);
         }
+        catch(Exception e)
+        {
+            throw e;
+        }
+
 
     }
 
@@ -95,7 +101,7 @@ public class GitHubRepoService implements  GitHubRepoUseCase
         return  gitHubRepoInfo;
     }
 
-   /* @Cacheable(value = "GitRepoInfo", key = "#fullName")*/
+    @Cacheable(value = "GitRepoInfo", key = "#fullName")
     private GitHubRepoInfoEntity findGitHubInfo(String RepoFullName)
     {
        return orderRepository.findByFullName(RepoFullName);
